@@ -1,7 +1,7 @@
 package main
 
 import (
-	"container/list"
+	"flag"
 	"github.com/helderfarias/hadisc/discovery"
 	"github.com/helderfarias/hadisc/driver"
 	"log"
@@ -12,35 +12,35 @@ const (
 	POLL_TIMEOUT = 5
 )
 
-func contains(src, dest *list.List) bool {
-	return false
-}
+var etcd = flag.String("etcd", "http://192.168.59.103:4001", "Etcd Host")
+var tpl = flag.String("template", "/etc/template.tpl", "Template config file")
+var conf = flag.String("config", "/etc/config.conf", "Config file")
 
 func main() {
-	driver := driver.Create(driver.ETCD)
-	if driver == nil {
-		log.Fatal("No such driver")
-	}
+	flag.Parse()
+	driver := driver.Create(*etcd)
+	discovery := discovery.Create(*tpl, *conf)
 
 	for {
-		servs := driver.Services("http://10.89.4.165:4001")
+		servs := driver.Services()
 
 		if len(servs) == 0 {
 			time.Sleep(POLL_TIMEOUT)
 			continue
 		}
 
-		log.Println("Configuration changed, reloading HAProxy...")
+		log.Println("Configuration changed")
 		discovery.GenerateConfig(servs)
 
-		// ret = call(["./reload-haproxy.sh"])
-		//         if ret != 0:
-		//             print "reloading haproxy returned: ", ret
-		//             time.sleep(POLL_TIMEOUT)
-		//             continue
-		//         current_services = services
+		log.Println("Reloading...")
+		err := discovery.ReloadProcess()
+		if err != nil {
+			log.Println(err)
+			time.Sleep(POLL_TIMEOUT)
+			continue
+		}
 
 		time.Sleep(POLL_TIMEOUT)
-		break
 	}
+
 }

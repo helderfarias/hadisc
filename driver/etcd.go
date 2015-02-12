@@ -7,30 +7,41 @@ import (
 )
 
 type EtcdDriver struct {
+	Host string
 }
 
-func (e *EtcdDriver) Services(host string) map[string]Service {
-	client := etcd.NewClient([]string{host})
+func (this *EtcdDriver) Services() map[string]Service {
+	client := etcd.NewClient([]string{this.Host})
 
-	resp, err := client.Get("backends", true, true)
+	resp, err := client.Get("services", true, true)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	services := make(map[string]Service)
 
-	for _, node := range resp.Node.Nodes {
-		if node.Dir {
-			for _, i := range node.Nodes {
-				if strings.Count(i.Key[1:], "/") != 2 {
-					continue
-				}
+	for _, keys := range resp.Node.Nodes {
+		service := Service{}
 
-				name := strings.Split(i.Key[1:], "/")[1]
-				server := i.Value
-				services[name] = Service{Container: name, Server: server}
+		for _, app := range keys.Nodes {
+			appType := app.Key[strings.LastIndex(app.Key, "/")+1:]
+
+			if appType == "domain" {
+				for _, item := range app.Nodes {
+					service.Domain = item.Value
+				}
+			}
+
+			if appType == "backend" {
+				for _, item := range app.Nodes {
+					container := item.Key[strings.LastIndex(item.Key, "/")+1:]
+					server := item.Nodes[0].Value
+					service.Backends = append(service.Backends, Backend{Container: container, Server: server})
+				}
 			}
 		}
+
+		services[service.Domain] = service
 	}
 
 	return services

@@ -1,22 +1,21 @@
 package driver
 
-const (
-	ETCD = 1
-)
+type Driver interface {
+	Services() map[string]Service
+}
 
 type Service struct {
+	Domain   string
+	Backends []Backend
+}
+
+type Backend struct {
 	Container string
 	Server    string
 }
 
-type Driver interface {
-	Services(host string) map[string]Service
-}
-
-func Create(driverType int) Driver {
-	if driverType == ETCD {
-		return new(EtcdDriver)
-	}
-
-	return nil
+func Create(host string) Driver {
+	newDriver := new(EtcdDriver)
+	newDriver.Host = host
+	return newDriver
 }

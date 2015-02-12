@@ -3,16 +3,33 @@ package discovery
 import (
 	"github.com/helderfarias/hadisc/driver"
 	"log"
+	"os"
+	"os/exec"
+	"text/template"
 )
 
-func GenerateConfig(services map[string]driver.Service) {
+type HAProxy struct {
+	TplFile    string
+	ConfigFile string
+}
 
-	for _, v := range services {
-		log.Println("ok --> ", v.Container, v.Server)
+func (this *HAProxy) GenerateConfig(services map[string]driver.Service) {
+	tpl, parserError := template.ParseFiles(this.TplFile)
+	if parserError != nil {
+		log.Fatal("Cannot parser template file", parserError)
 	}
 
-	// template = env.get_template('haproxy.cfg.tmpl')
-	//    with open("/etc/haproxy.cfg", "w") as f:
-	//        f.write(template.render(services=services))
+	fileCreated, _ := os.Create(this.ConfigFile)
+	defer fileCreated.Close()
 
+	err := tpl.Execute(fileCreated, services)
+	if err != nil {
+		log.Println("Cannot create file config", err)
+	}
+}
+
+func (this *HAProxy) ReloadProcess() error {
+	cmd := exec.Command("haproxy", "-D", "-f", this.ConfigFile, "-p", "/var/run/haproxy.pid")
+
+	return cmd.Run()
 }
