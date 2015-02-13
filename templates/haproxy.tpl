@@ -13,20 +13,17 @@ defaults
   option forwardfor
   option http-server-close
   option httpclose
-  contimeout 5000
-  clitimeout 50000
-  srvtimeout 50000
+  timeout connect 5000
+  timeout client  50000
+  timeout server  50000
 
 frontend http-in
   bind *:80
-  {{range $k, $v := .}}
-  use_backend {{$v.Domain}}
-  {{end}}  
+  default_backend services
 
-{{range $k, $v := .}}
-backend {{$v.Domain}}
-  balance leastconn
-  {{range $backend := $v.Backends}}
-  server {{$backend.Container}} {{$backend.Server}} check inter 2s rise 3 fall 2
+backend services
+  mode http
+  balance roundrobin
+  {{range .}}
+  server {{.Container}} {{.Server}} check inter 2s rise 3 fall 2
   {{end}}
-{{end}}
