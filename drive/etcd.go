@@ -20,7 +20,7 @@ func NewEtcdDrive(host string) *EtcdDrive {
 	return newDrive
 }
 
-func (this *EtcdDrive) Watch(handler *discovery.HAProxy) {
+func (this *EtcdDrive) Watch(handler discovery.HandlerDiscovery) {
 	changeChan := make(chan *etcd.Response)
 	stopChan := make(chan bool)
 
@@ -32,7 +32,7 @@ func (this *EtcdDrive) Watch(handler *discovery.HAProxy) {
 
 				handler.GenerateConfig(services)
 
-				log.Println("Reloading process", err)
+				log.Println("Reloading process")
 				err := handler.ReloadProcess()
 				if err != nil {
 					log.Println("Error reload process", err)
