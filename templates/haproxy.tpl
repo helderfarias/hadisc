@@ -19,11 +19,18 @@ defaults
 
 frontend http-in
   bind *:80
-  default_backend services
+  {{range $host := .}} 
+  acl host_{{$host.Domain}} path_beg ^/api/v1/{{$host.Domain}}?
+  {{end}}
+  {{range $backend := .}} 
+  use_backend {{$backend.Domain}}
+  {{end}}
 
-backend services
+{{range $domain := .}} 
+backend {{$domain.Domain}}
   mode http
   balance roundrobin
-  {{range .}}
+  {{range $domain.Backends}}
   server {{.Container}} {{.Server}} check inter 2s rise 3 fall 2
   {{end}}
+{{end}}
