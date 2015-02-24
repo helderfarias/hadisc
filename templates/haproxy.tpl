@@ -18,12 +18,12 @@ defaults
   timeout server  50000
 
 frontend http-in
-  bind *:80
+  bind *:8080
   {{range $host := .}} 
-  acl host_{{$host.Domain}} path_beg ^/api/v1/{{$host.Domain}}?
+  acl host_{{$host.Domain}} path_beg /{{$host.Domain}}
   {{end}}
-  {{range $backend := .}} 
-  use_backend {{$backend.Domain}}
+  {{range $host := .}} 
+  use_backend {{$host.Domain}} if host_{{$host.Domain}}
   {{end}}
 
 {{range $domain := .}} 

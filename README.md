@@ -1,2 +1,2 @@
 # hadisc
-Service Discovery (HAProxy + ETCD)
+Service Discovery (HAProxy + NGINX + ETCD)

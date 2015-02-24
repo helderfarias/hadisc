@@ -8,13 +8,14 @@ import (
 	"os"
 )
 
-var name = flag.String("service", "/admin", "/admin or /cad")
+var name = flag.String("service", "/cad", "/admin or /cad")
 var port = flag.String("port", "3100", "Port")
 
 func ServiceEndpoint(rw http.ResponseWriter, req *http.Request) {
 	hostName, _ := os.Hostname()
 
 	fmt.Fprintf(rw, "Service: %s, Host: %s", *name, hostName)
+	log.Printf("Service: %s, Host: %s", *name, hostName)
 }
 
 func main() {

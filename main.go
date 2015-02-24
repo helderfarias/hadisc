@@ -7,9 +7,9 @@ import (
 	"log"
 )
 
-var etcd = flag.String("etcd", "http://192.168.59.103:4001", "Etcd Host")
-var tpl = flag.String("template", "/etc/template.tpl", "Template config file")
-var conf = flag.String("config", "/etc/config.conf", "Config file")
+var etcd = flag.String("etcd", "http://localhost:4001", "Etcd Host")
+var tpl = flag.String("template", "/etc/haproxy/haproxy.tpl", "Template config file")
+var conf = flag.String("config", "/etc/haproxy/haproxy.conf", "Config file")
 
 func main() {
 	flag.Parse()
@@ -20,7 +20,7 @@ func main() {
 
 	handlerDiscovery := discovery.NewHAProxy(*tpl, *conf)
 
-	handlerDrive.Watch(handlerDiscovery)
+	handlerDrive.BootstrapAndWatch(handlerDiscovery)
 
 	log.Println("Shutdown")
 }

@@ -20,7 +20,7 @@ func NewEtcdDrive(host string) *EtcdDrive {
 	return newDrive
 }
 
-func (this *EtcdDrive) Watch(handler discovery.HandlerDiscovery) {
+func (this *EtcdDrive) BootstrapAndWatch(handler discovery.HandlerDiscovery) {
 	changeChan := make(chan *etcd.Response)
 	stopChan := make(chan bool)
 
@@ -41,11 +41,19 @@ func (this *EtcdDrive) Watch(handler discovery.HandlerDiscovery) {
 		}
 	}()
 
-	log.Println("Start watching changes in etcd")
+	log.Println("Bootstrap")
+	bootstrap(handler, this.EtcClient)
 
+	log.Println("Start watching changes in etcd")
 	if _, err := this.EtcClient.Watch("/services", 0, true, changeChan, stopChan); err != nil {
 		log.Println("Cannot register watcher for changes in etcd: ", err)
 	}
+}
+
+func bootstrap(handler discovery.HandlerDiscovery, client *etcd.Client) {
+	services := services(client)
+
+	handler.GenerateConfig(services)
 }
 
 func services(client *etcd.Client) []helper.Service {
@@ -55,7 +63,7 @@ func services(client *etcd.Client) []helper.Service {
 		return nil
 	}
 
-	services := make([]helper.Service, 1)
+	services := make([]helper.Service, 0)
 
 	for _, keys := range resp.Node.Nodes {
 		service := helper.Service{}
