@@ -73,7 +73,8 @@ func services(client *etcd.Client) []helper.Service {
 
 			if appType == "domain" {
 				for _, item := range app.Nodes {
-					service.Domain = item.Value
+					service.Domain = makeDomain(app.Key)
+					service.Endpoint = item.Value
 				}
 			}
 
@@ -93,4 +94,14 @@ func services(client *etcd.Client) []helper.Service {
 	}
 
 	return services
+}
+
+func makeDomain(value string) (endpoint string) {
+	if !strings.Contains(value, "/") {
+		return ""
+	}
+
+	service := value[:strings.LastIndex(value, "/")]
+	service = service[strings.LastIndex(service, "/")+1:]
+	return service
 }

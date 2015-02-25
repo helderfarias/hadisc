@@ -9,7 +9,7 @@ import (
 )
 
 var etcd = flag.String("etcd", "", "Etcd Host")
-var tpl = flag.String("template", "/etc/haproxy/haproxy.tpl", "Template config file")
+var tpl = flag.String("template", "/etc/haproxy/template/haproxy.tpl", "Template config file")
 var conf = flag.String("config", "/etc/haproxy/haproxy.conf", "Config file")
 
 func main() {

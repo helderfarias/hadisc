@@ -1,12 +1,19 @@
-
+{{range $domain := .}} 
+upstream {{$domain.Domain}} {  
+   {{range $domain.Backends}}
+   server {{.Server}};
+   {{end}}
+}
+{{end}}
 
 server {
 
-    listen       80;
+    listen       8080;
     server_name  localhost;
 
-    #location ~ \.php$ {
-    #    proxy_pass   http://127.0.0.1;
-    #}
-
+    {{range $host := .}} 
+    location ^~ {{$host.Endpoint}} {
+       proxy_pass http://{{$host.Domain}};
+    }
+    {{end}}
 }

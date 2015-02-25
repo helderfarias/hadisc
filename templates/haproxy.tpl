@@ -20,7 +20,7 @@ defaults
 frontend http-in
   bind *:8080
   {{range $host := .}} 
-  acl host_{{$host.Domain}} path_beg /{{$host.Domain}}
+  acl host_{{$host.Domain}} path_beg {{$host.Endpoint}}
   {{end}}
   {{range $host := .}} 
   use_backend {{$host.Domain}} if host_{{$host.Domain}}
