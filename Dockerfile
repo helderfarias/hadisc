@@ -31,17 +31,16 @@ RUN apt-get update && apt-get -y install supervisor
 RUN go get github.com/tools/godep
 RUN go install github.com/tools/godep
 
-RUN mkdir -p $GOPATH/src/github.com/helderfarias/hadisc
-COPY discovery $GOPATH/src/github.com/helderfarias/hadisc/discovery
-COPY drive $GOPATH/src/github.com/helderfarias/hadisc/drive
-COPY helper $GOPATH/src/github.com/helderfarias/hadisc/helper
-COPY main.go $GOPATH/src/github.com/helderfarias/hadisc/
-RUN godep go install github.com/helderfarias/hadisc
-RUN cp bin/hadisc /usr/bin/hadisc && chmod +x /usr/bin/hadisc
+RUN go get github.com/helderfarias/hadisc
+RUN cd src/github.com/helderfarias/hadisc && godep go build
+RUN cd src/github.com/helderfarias/hadisc \
+   && cp hadisc /usr/bin/hadisc \
+   && chmod +x /usr/bin/hadisc \
+   && mkdir -p /etc/haproxy/template \
+   && cp templates/haproxy.tpl /etc/haproxy/template \
+   && cp templates/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
 
 WORKDIR /etc/haproxy
-COPY templates/haproxy.tpl /etc/haproxy/template/
-COPY templates/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
 
 EXPOSE 8080
 
