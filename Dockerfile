@@ -28,15 +28,15 @@ RUN buildDeps='curl gcc libc6-dev libpcre3-dev libssl-dev make' \
 
 RUN apt-get update && apt-get -y install supervisor
 
-mkdir bin
-RUN go get github.com/coreos/go-etcd/etcd
+RUN go get github.com/tools/godep
+RUN go install github.com/tools/godep
 
 RUN mkdir -p $GOPATH/src/github.com/helderfarias/hadisc
 COPY discovery $GOPATH/src/github.com/helderfarias/hadisc/discovery
 COPY drive $GOPATH/src/github.com/helderfarias/hadisc/drive
 COPY helper $GOPATH/src/github.com/helderfarias/hadisc/helper
 COPY main.go $GOPATH/src/github.com/helderfarias/hadisc/
-RUN go install github.com/helderfarias/hadisc
+RUN godep go install github.com/helderfarias/hadisc
 RUN cp bin/hadisc /usr/bin/hadisc && chmod +x /usr/bin/hadisc
 
 WORKDIR /etc/haproxy

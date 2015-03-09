@@ -1,7 +1,5 @@
 FROM golang
 
-RUN mkdir bin
-
 RUN mkdir src/microservice
 COPY microservice.go $GOPATH/src/microservice/
 RUN go install microservice
