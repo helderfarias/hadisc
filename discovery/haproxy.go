@@ -22,7 +22,7 @@ func (this *HAProxy) GenerateConfig(services []helper.Service) {
 }
 
 func (this *HAProxy) ReloadProcess() (err error) {
-	cmd := exec.Command("haproxy", "-D", "-f", this.ConfigFile, "-p", "/var/run/haproxy.pid")
+	cmd := exec.Command("supervisorctl", "restart", "haproxy")
 
 	return cmd.Run()
 }
