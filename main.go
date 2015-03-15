@@ -6,7 +6,6 @@ import (
 	"github.com/helderfarias/hadisc/drive"
 	"github.com/helderfarias/hadisc/util"
 	"log"
-	"os"
 )
 
 var etcd = flag.String("etcd", util.GetOpt("ETCD_HOST", ""), "Etcd Host")
@@ -23,7 +22,7 @@ func main() {
 
 	handlerDrive := drive.NewEtcdDrive(*etcd)
 
-	var handlerDiscovery
+	var handlerDiscovery discovery.HandlerDiscovery
 	if *proxy == "haproxy" {
 		handlerDiscovery = discovery.NewHAProxy(*tpl, *conf)
 	} else if *proxy == "nginx" {
