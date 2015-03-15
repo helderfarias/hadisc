@@ -22,7 +22,7 @@ func (this *Nginx) GenerateConfig(services []helper.Service) {
 }
 
 func (this *Nginx) ReloadProcess() (err error) {
-	cmd := exec.Command("supervisorctl", "restart", "nginx")
+	cmd := exec.Command("nginx", "-s", "reload")
 
 	return cmd.Run()
 }
