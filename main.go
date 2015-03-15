@@ -17,15 +17,16 @@ func main() {
 	flag.Parse()
 
 	log.Println("Initialize...")
-	log.Printf("Proxy %s", *proxy)
 	log.Printf("Enviroment %s", *etcd)
 
 	handlerDrive := drive.NewEtcdDrive(*etcd)
 
 	var handlerDiscovery discovery.HandlerDiscovery
 	if *proxy == "haproxy" {
+		log.Printf("Proxy haproxy")
 		handlerDiscovery = discovery.NewHAProxy(*tpl, *conf)
 	} else if *proxy == "nginx" {
+		log.Printf("Proxy nginx")
 		handlerDiscovery = discovery.NewNginx(*tpl, *conf)
 	} else {
 		log.Panic("No such proxy")

@@ -26,6 +26,7 @@ RUN buildDeps='curl gcc libc6-dev libpcre3-dev libssl-dev make' \
 	&& rm -rf /usr/src/haproxy \
 	&& apt-get purge -y --auto-remove $buildDeps
 
+
 # Install haproxy
 RUN apt-get update \
     && apt-get install -y ca-certificates nginx \
