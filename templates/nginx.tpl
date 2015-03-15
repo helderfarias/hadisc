@@ -8,12 +8,12 @@ upstream {{$domain.Domain}} {
 
 server {
 
-    listen       8090;
+    listen       8080;
     server_name  localhost;
 
     {{range $host := .}} 
     location ^~ {{$host.Endpoint}} {
-       proxy_pass http://{{$host.Domain}}/{{$host.Endpoint}};
+       proxy_pass http://{{$host.Domain}}{{$host.Endpoint}};
     }
     {{end}}
 }
