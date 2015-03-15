@@ -10,8 +10,8 @@ import (
 
 var etcd = flag.String("etcd", util.GetOpt("ETCD_HOST", ""), "Etcd Host")
 var proxy = flag.String("proxy", util.GetOpt("DISCOVERY_PROXY", "nginx"), "haproxy or nginx")
-var tpl = flag.String("template", "/etc/nginx/template/nginx.tpl", "Template config file")
-var conf = flag.String("config", "/etc/nginx/sites-enabled/server.conf", "Config file")
+var tpl = flag.String("template", util.GetOpt("DISCOVERY_TPL", "/etc/nginx/template/nginx.tpl"), "Template config file")
+var conf = flag.String("config", util.GetOpt("DISCOVERY_CFG", "/etc/nginx/sites-enabled/server.conf"), "Config file")
 
 func main() {
 	flag.Parse()
