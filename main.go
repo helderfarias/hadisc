@@ -19,7 +19,7 @@ func main() {
 
 	if *etcd == "" {
 		log.Println("No such -etcd' in the command line, try lookup by enviroment")
-		*etcd = os.Getenv("ETCD_HOST_DISCOVERY")
+		*etcd = os.Getenv("ETCD_HOST")
 		log.Printf("Enviroment %s", *etcd)
 	}
 

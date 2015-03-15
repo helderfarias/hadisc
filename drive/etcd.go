@@ -14,9 +14,10 @@ type EtcdDrive struct {
 }
 
 func NewEtcdDrive(host string) *EtcdDrive {
+	urls := makeEntries(host)
 	newDrive := new(EtcdDrive)
 	newDrive.Host = host
-	newDrive.EtcClient = etcd.NewClient([]string{host})
+	newDrive.EtcClient = etcd.NewClient(urls)
 	return newDrive
 }
 
@@ -99,4 +100,15 @@ func makeDomain(value string) (endpoint string) {
 	service := value[:strings.LastIndex(value, "/")]
 	service = service[strings.LastIndex(service, "/")+1:]
 	return service
+}
+
+func makeEntries(hosts string) []string {
+	pairs := strings.Split(hosts, ",")
+
+	entries := make([]string, 0)
+	for _, value := range pairs {
+		entries = append(entries, value)
+	}
+
+	return entries
 }
