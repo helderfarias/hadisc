@@ -4,28 +4,33 @@ import (
 	"flag"
 	"github.com/helderfarias/hadisc/discovery"
 	"github.com/helderfarias/hadisc/drive"
+	"github.com/helderfarias/hadisc/util"
 	"log"
 	"os"
 )
 
-var etcd = flag.String("etcd", "", "Etcd Host")
-var tpl = flag.String("template", "/etc/haproxy/template/haproxy.tpl", "Template config file")
-var conf = flag.String("config", "/etc/haproxy/haproxy.conf", "Config file")
+var etcd = flag.String("etcd", util.GetOpt("ETCD_HOST", ""), "Etcd Host")
+var proxy = flag.String("proxy", util.GetOpt("DISCOVERY_PROXY", "nginx"), "haproxy or nginx")
+var tpl = flag.String("template", "/etc/nginx/template/nginx.tpl", "Template config file")
+var conf = flag.String("config", "/etc/nginx/sites-enabled/server.conf", "Config file")
 
 func main() {
 	flag.Parse()
 
 	log.Println("Initialize...")
-
-	if *etcd == "" {
-		log.Println("No such -etcd' in the command line, try lookup by enviroment")
-		*etcd = os.Getenv("ETCD_HOST")
-		log.Printf("Enviroment %s", *etcd)
-	}
+	log.Printf("Proxy %s", *proxy)
+	log.Printf("Enviroment %s", *etcd)
 
 	handlerDrive := drive.NewEtcdDrive(*etcd)
 
-	handlerDiscovery := discovery.NewHAProxy(*tpl, *conf)
+	var handlerDiscovery
+	if *proxy == "haproxy" {
+		handlerDiscovery = discovery.NewHAProxy(*tpl, *conf)
+	} else if *proxy == "nginx" {
+		handlerDiscovery = discovery.NewNginx(*tpl, *conf)
+	} else {
+		log.Panic("No such proxy")
+	}
 
 	handlerDrive.BootstrapAndWatch(handlerDiscovery)
 
