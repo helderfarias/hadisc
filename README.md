@@ -1,9 +1,13 @@
-# hadisc
+# Service Discovery
 
-### Service Discovery (HAProxy + ETCD)
+## Dockerfile
+
 ```
-   docker run --privileged \
-      --name discovery \
-      -d --link etcd:etcd \
-      -e ETCD_HOST_DISCOVERY=http://etcd:2379 hadisc
+  docker build -t hadisc .
+```
+
+## Run
+
+```
+   docker run -d --name discovery -e ETCD_HOST=http://localhost:2379 hadisc
 ```
