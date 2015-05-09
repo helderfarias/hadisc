@@ -64,6 +64,7 @@ RUN cd $GOPATH/src/github.com/helderfarias/hadisc \
     && cp templates/*.conf /etc/supervisor/conf.d/
 
 RUN rm /etc/nginx/conf.d/*
+COPY templates/nginx_server.conf /etc/nginx/nginx.conf
 
 COPY scripts/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

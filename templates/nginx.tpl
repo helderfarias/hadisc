@@ -1,5 +1,7 @@
-{{range $domain := .}} 
-upstream {{$domain.Domain}} {  
+client_max_body_size 50M;
+
+{{range $domain := .}}
+upstream {{$domain.Domain}} {
    {{range $domain.Backends}}
    server {{.Server}};
    {{end}}
@@ -7,11 +9,10 @@ upstream {{$domain.Domain}} {
 {{end}}
 
 server {
-
     listen       8080;
     server_name  localhost;
 
-    {{range $host := .}} 
+    {{range $host := .}}
     location ^~ {{$host.Endpoint}} {
        proxy_pass http://{{$host.Domain}}{{$host.Endpoint}};
     }
