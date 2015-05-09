@@ -1,5 +1,3 @@
-client_max_body_size 50M;
-
 {{range $domain := .}}
 upstream {{$domain.Domain}} {
    {{range $domain.Backends}}
